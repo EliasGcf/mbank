@@ -6,3 +6,29 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model Account {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  email         String   @unique
+  password      String
+  createdAt     DateTime @default(now())
+  amountInCents Int
+
+  sendedTransactions   Transaction[] @relation("fromAccount")
+  recievedTransactions Transaction[] @relation("toAccount")
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromAccountId String   @db.ObjectId
+  toAccountId   String   @db.ObjectId
+  amountInCents Int
+  createdAt     DateTime @default(now())
+
+  from Account @relation("fromAccount", fields: [fromAccountId], references: [id])
+  to   Account @relation("toAccount", fields: [toAccountId], references: [id])
+
+  @@map("transactions")
+}

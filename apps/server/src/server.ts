@@ -1,18 +1,7 @@
-import Koa from 'koa';
-import Router from '@koa/router';
-import koaPlayground from 'graphql-playground-middleware-koa';
+import { app } from '@app';
+import { env } from '@env';
 
-import { createHandler } from 'graphql-http/lib/use/koa';
-
-import { schema } from "./graphql/schema";
-
-const app = new Koa();
-const router = new Router();
-
-router.all('/playground', koaPlayground({ endpoint: '/graphql' }));
-router.all('/graphql', createHandler({ schema: schema }));
-
-
-app.use(router.routes()).use(router.allowedMethods());
-
-app.listen(3333, () => console.log('Server is running on port http://localhost:3333'));
+app.listen(3333, () => {
+  console.log(`Server is running on port http://localhost:${env.PORT}`);
+  console.log(`GraphQL playground is running on http://localhost:${env.PORT}/playground`);
+});
