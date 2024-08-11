@@ -1,0 +1,64 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+}
+
+type RootQueryType {
+  hello: String
+
+  """Get the current account information."""
+  me: Account
+}
+
+type Account {
+  id: ID
+  email: String
+  amountInCents: Int
+
+  """Get the current account transfers."""
+  transactions: [Transfer]
+}
+
+type Transfer {
+  id: String
+  fromAccountId: String
+  toAccountId: String
+  amountInCents: Int
+  createdAt: String
+}
+
+type RootMutationType {
+  createAccount(
+    """The unique email of the account"""
+    email: String!
+
+    """The password of the account"""
+    password: String!
+
+    """The password confirmation of the account"""
+    passwordConfirmation: String!
+  ): Account
+  login(
+    """The email to login with"""
+    email: String!
+
+    """The password to login with"""
+    password: String!
+  ): AuthPayload
+  transfer(
+    """The id of the account to transfer to"""
+    toAccountId: String!
+
+    """The amount to transfer in cents"""
+    amountInCents: Int!
+  ): TransferPayload
+}
+
+type AuthPayload {
+  token: String
+}
+
+type TransferPayload {
+  """The logged in account"""
+  me: Account
+}
