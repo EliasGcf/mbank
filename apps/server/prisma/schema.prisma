@@ -17,7 +17,7 @@ model Account {
   amountInCents Int
 
   sendedTransactions   Transaction[] @relation("fromAccount")
-  recievedTransactions Transaction[] @relation("toAccount")
+  receivedTransactions Transaction[] @relation("toAccount")
 
   @@map("accounts")
 }

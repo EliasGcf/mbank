@@ -6,19 +6,22 @@ interface GetTransactionParams {
 }
 
 export async function getTransaction(params: GetTransactionParams) {
-  const transaction = await prisma.transaction.findUnique({
-    where: {
-      id: params.transactionId,
-      AND: [
-        {
-          OR: [
-            { fromAccountId: params.loggedInAccountId },
-            { toAccountId: params.loggedInAccountId },
-          ],
-        },
-      ],
+  const account = await prisma.account.findUnique({
+    where: { id: params.loggedInAccountId },
+    select: {
+      id: true,
+      receivedTransactions: {
+        where: { id: params.transactionId },
+      },
+      sendedTransactions: {
+        where: { id: params.transactionId },
+      },
     },
   });
+
+  if (!account) throw new Error('Account not found');
+
+  const transaction = account.receivedTransactions[0] || account.sendedTransactions[0];
 
   if (!transaction) throw new Error('Transaction not found');
 
