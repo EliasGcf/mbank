@@ -1,64 +1,159 @@
-schema {
-  query: RootQueryType
-  mutation: RootMutationType
-}
-
-type RootQueryType {
+"""The root Query type."""
+type Query {
   hello: String
 
-  """Get the current account information."""
-  me: Account
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+
+  """Fetches objects given their IDs"""
+  nodes(
+    """The IDs of objects"""
+    ids: [ID!]!
+  ): [Node]!
 }
 
-type Account {
-  id: ID
-  email: String
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+"""The root Mutation type."""
+type Mutation {
+  """Create a new account"""
+  CreateAccount(input: CreateAccountInput!): CreateAccountPayload
+
+  """Get the token to use for authentication"""
+  Login(input: LoginInput!): LoginPayload
+
+  """
+  Transfer money from the logged in account to another account. Require authentication.
+  """
+  Transfer(input: TransferInput!): TransferPayload
+}
+
+type CreateAccountPayload {
+  account: Account
+  clientMutationId: String
+}
+
+"""Account"""
+type Account implements Node {
+  """The ID of an object"""
+  id: ID!
+  name: String!
+  email: String!
   amountInCents: Int
 
-  """Get the current account transfers."""
-  transactions: [Transfer]
+  """A list of transactions for the current account"""
+  transactions(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): TransactionConnection
 }
 
-type Transfer {
-  id: String
-  fromAccountId: String
-  toAccountId: String
-  amountInCents: Int
-  createdAt: String
+"""A connection to a list of items."""
+type TransactionConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [TransactionEdge]
 }
 
-type RootMutationType {
-  createAccount(
-    """The unique email of the account"""
-    email: String!
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
 
-    """The password of the account"""
-    password: String!
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
 
-    """The password confirmation of the account"""
-    passwordConfirmation: String!
-  ): Account
-  login(
-    """The email to login with"""
-    email: String!
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
 
-    """The password to login with"""
-    password: String!
-  ): AuthPayload
-  transfer(
-    """The id of the account to transfer to"""
-    toAccountId: String!
-
-    """The amount to transfer in cents"""
-    amountInCents: Int!
-  ): TransferPayload
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
 }
 
-type AuthPayload {
+"""An edge in a connection."""
+type TransactionEdge {
+  """The item at the end of the edge"""
+  node: Transaction
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type Transaction implements Node {
+  """The ID of an object"""
+  id: ID!
+  fromAccount: Account!
+  toAccount: Account!
+  amountInCents: Int!
+  description: String
+  createdAt: String!
+}
+
+input CreateAccountInput {
+  """The name of the user account"""
+  name: String!
+
+  """The unique email of the account"""
+  email: String!
+
+  """The password of the account"""
+  password: String!
+
+  """The password confirmation of the account"""
+  passwordConfirmation: String!
+  clientMutationId: String
+}
+
+type LoginPayload {
   token: String
+  account: Account
+  clientMutationId: String
+}
+
+input LoginInput {
+  """The unique email of the account"""
+  email: String!
+
+  """The password of the account"""
+  password: String!
+  clientMutationId: String
 }
 
 type TransferPayload {
   """The logged in account"""
-  me: Account
+  account: Account
+
+  """The transaction"""
+  transaction: Transaction
+  clientMutationId: String
+}
+
+input TransferInput {
+  """The global id of the account to transfer to"""
+  toAccountId: String!
+
+  """The amount to transfer in cents"""
+  amountInCents: Int!
+
+  """The description of the transfer"""
+  description: String
+  clientMutationId: String
 }

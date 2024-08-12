@@ -1,13 +1,13 @@
-import { hash } from 'bcryptjs';
-import { GraphQLFieldConfig, GraphQLNonNull, GraphQLString } from 'graphql';
+import { GraphQLNonNull, GraphQLString } from 'graphql';
+import { mutationWithClientMutationId } from 'graphql-relay';
 import { z } from 'zod';
 
-import { AccountType } from '@graphql/types/account';
-
-import { prisma } from '@lib/prisma';
+import { createAccount } from '@services/account.service';
+import { AccountType } from '@graphql/types/account.type';
 
 const argsSchema = z
   .object({
+    name: z.string(),
     email: z.string().email(),
     password: z.string(),
     passwordConfirmation: z.string(),
@@ -22,9 +22,14 @@ const argsSchema = z
     }
   });
 
-export const createAccount: GraphQLFieldConfig<unknown, unknown> = {
-  type: AccountType,
-  args: {
+export const CreateAccount = mutationWithClientMutationId({
+  name: 'CreateAccount',
+  description: 'Create a new account',
+  inputFields: {
+    name: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The name of the user account',
+    },
     email: {
       type: new GraphQLNonNull(GraphQLString),
       description: 'The unique email of the account',
@@ -38,27 +43,21 @@ export const createAccount: GraphQLFieldConfig<unknown, unknown> = {
       description: 'The password confirmation of the account',
     },
   },
-  resolve: async (_, _args) => {
+  mutateAndGetPayload: async (_args) => {
     const args = argsSchema.parse(_args);
 
-    const accountByEmailExists = await prisma.account.findUnique({
-      where: { email: args.email },
+    const account = await createAccount({
+      email: args.email,
+      name: args.name,
+      password: args.password,
     });
 
-    if (accountByEmailExists) throw new Error('Account already exists');
-
-    const account = await prisma.account.create({
-      data: {
-        email: args.email,
-        password: await hash(args.password, 6),
-        amountInCents: 0,
-      },
-    });
-
-    return {
-      id: account.id,
-      email: account.email,
-      amountInCents: account.amountInCents,
-    };
+    return { account };
   },
-};
+  outputFields: {
+    account: {
+      type: AccountType,
+      resolve: (payload) => payload.account,
+    },
+  },
+});

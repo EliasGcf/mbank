@@ -1,9 +1,11 @@
-import { app } from '@app';
-import { env } from '@env';
-import { printSchema } from 'graphql';
 import fs from 'node:fs/promises';
 
+import { printSchema } from 'graphql';
+
 import { schema } from '@graphql/schema';
+
+import { app } from '@app';
+import { env } from '@env';
 
 app.listen(3333, () => {
   console.log(`Server is running on port http://localhost:${env.PORT}`);

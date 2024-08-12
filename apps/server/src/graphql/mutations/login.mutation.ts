@@ -1,52 +1,47 @@
-import { compare } from 'bcryptjs';
-import {
-  GraphQLFieldConfig,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  GraphQLString,
-} from 'graphql';
+import { GraphQLNonNull, GraphQLString } from 'graphql';
+import { mutationWithClientMutationId } from 'graphql-relay';
 import { z } from 'zod';
 
-import { signJWT } from '@lib/jwt';
-import { prisma } from '@lib/prisma';
+import { AccountType } from '@graphql/types/account.type';
+
+import { login } from '@services/account.service';
 
 const argsSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
 
-export const login: GraphQLFieldConfig<unknown, unknown> = {
-  type: new GraphQLObjectType({
-    name: 'AuthPayload',
-    fields: {
-      token: { type: GraphQLString },
-    },
-  }),
-  args: {
+export const Login = mutationWithClientMutationId({
+  name: 'Login',
+  description: 'Get the token to use for authentication',
+  inputFields: {
     email: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The email to login with',
+      description: 'The unique email of the account',
     },
     password: {
       type: new GraphQLNonNull(GraphQLString),
-      description: 'The password to login with',
+      description: 'The password of the account',
     },
   },
-  resolve: async (_, _args) => {
+  mutateAndGetPayload: async (_args) => {
     const args = argsSchema.parse(_args);
 
-    const account = await prisma.account.findUnique({
-      where: { email: args.email },
+    const { token, account } = await login({
+      email: args.email,
+      password: args.password,
     });
 
-    if (!account) throw new Error('Invalid email or password');
-
-    const isPasswordValid = await compare(args.password, account.password);
-
-    if (!isPasswordValid) throw new Error('Invalid email or password');
-
-    const jwt = signJWT({ sub: account.id });
-
-    return { token: jwt };
+    return { token, account };
   },
-};
+  outputFields: {
+    token: {
+      type: GraphQLString,
+      resolve: (payload) => payload.token,
+    },
+    account: {
+      type: AccountType,
+      resolve: (payload) => payload.account,
+    },
+  },
+});

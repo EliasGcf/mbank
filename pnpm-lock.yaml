@@ -28,6 +28,9 @@ importers:
       graphql-playground-middleware-koa:
         specifier: ^1.6.22
         version: 1.6.22(koa@2.15.3)
+      graphql-relay:
+        specifier: ^0.10.2
+        version: 0.10.2(graphql@16.9.0)
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -1016,6 +1019,12 @@ packages:
     resolution: {integrity: sha512-soVUM76ecq5GHk12H69Ce7afzbYuWWc73oKMOcEkmtAn/G9NUdsNvLjLdCnHQX1V0cOUeSbmcYcrebyBOIYGMQ==}
     peerDependencies:
       koa: ^2
+
+  graphql-relay@0.10.2:
+    resolution: {integrity: sha512-abybva1hmlNt7Y9pMpAzHuFnM2Mme/a2Usd8S4X27fNteLGRAECMYfhmsrpZFvGn3BhmBZugMXYW/Mesv3P1Kw==}
+    engines: {node: ^12.20.0 || ^14.15.0 || >= 15.9.0}
+    peerDependencies:
+      graphql: ^16.2.0
 
   graphql@16.9.0:
     resolution: {integrity: sha512-GGTKBX4SD7Wdb8mqeDLni2oaRGYQWjWHGKPQ24ZMnUtKfcsVoiv4uX8+LJr1K6U5VW2Lu1BwJnj7uiori0YtRw==}
@@ -2914,6 +2923,10 @@ snapshots:
     dependencies:
       graphql-playground-html: 1.6.30
       koa: 2.15.3
+
+  graphql-relay@0.10.2(graphql@16.9.0):
+    dependencies:
+      graphql: 16.9.0
 
   graphql@16.9.0: {}
 

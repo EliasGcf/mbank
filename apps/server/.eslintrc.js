@@ -8,9 +8,16 @@ function getDirectories(path = './') {
     .map((dir) => dir.name);
 }
 
-const importOrderPaths = getDirectories(path.join(__dirname, 'src')).map(
-  (dir) => `/^@${dir}/`,
-);
+function getFiles(path = './') {
+  return fs
+    .readdirSync(path, { withFileTypes: true })
+    .filter((file) => file.isFile())
+    .map((file) => file.name);
+}
+
+const folders = getDirectories(path.join(__dirname, 'src')).map((dir) => `/^@${dir}/`);
+
+const files = getFiles(path.join(__dirname, 'src')).map((file) => `/^@${file.replace('.ts', '')}/`);
 
 /**
  * @type {import('eslint').Linter.BaseConfig}
@@ -38,14 +45,18 @@ module.exports = {
         printWidth: 90,
       },
     ],
+    '@typescript-eslint/no-var-requires': 'off',
     'import-helpers/order-imports': [
       'warn',
       {
         newlinesBetween: 'always',
         alphabetize: { order: 'asc', ignoreCase: true },
         groups: [
+          // that starts with 'node:'
+          ['/^node:/'],
           ['module'],
-          ...importOrderPaths,
+          ...folders,
+          files,
           ['parent', 'sibling'],
           'index',
         ],

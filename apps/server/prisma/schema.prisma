@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -9,6 +10,7 @@ datasource db {
 
 model Account {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
   email         String   @unique
   password      String
   createdAt     DateTime @default(now())
@@ -25,6 +27,7 @@ model Transaction {
   fromAccountId String   @db.ObjectId
   toAccountId   String   @db.ObjectId
   amountInCents Int
+  description   String?
   createdAt     DateTime @default(now())
 
   from Account @relation("fromAccount", fields: [fromAccountId], references: [id])

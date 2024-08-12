@@ -13,6 +13,14 @@ export function verifyJWT(token: string) {
   try {
     return jwt.verify(token, env.JWT_SECRET) as JWTPayload;
   } catch (error) {
+    return null;
+  }
+}
+
+export function verifyRequiredJWT(token: string) {
+  try {
+    return jwt.verify(token, env.JWT_SECRET) as JWTPayload;
+  } catch (error) {
     throw new Error('Unauthorized');
   }
 }

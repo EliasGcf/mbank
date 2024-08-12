@@ -1,31 +1,31 @@
 import { GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
 
-import { createAccount } from '@graphql/mutations/create-account.mutation';
-import { login } from '@graphql/mutations/login.mutation';
-import { transfer } from '@graphql/mutations/transfer.mutation';
-import { me } from '@graphql/queries/me.query';
+import { CreateAccount } from '@graphql/mutations/create-account.mutation';
+import { Login } from '@graphql/mutations/login.mutation';
+import { Transfer } from '@graphql/mutations/transfer.mutation';
+import { nodeField, nodesField } from '@graphql/queries/node.query';
 
 const RootQuery = new GraphQLObjectType({
-  name: 'RootQueryType',
+  name: 'Query',
+  description: 'The root Query type.',
   fields: {
-    hello: {
-      type: GraphQLString,
-      resolve: () => 'Hello world!',
-    },
-    me,
+    hello: { type: GraphQLString, resolve: () => 'Hello world!' },
+    node: nodeField,
+    nodes: nodesField,
   },
 });
 
-const RootMutation = new GraphQLObjectType({
-  name: 'RootMutationType',
+export const MutationType = new GraphQLObjectType({
+  name: 'Mutation',
+  description: 'The root Mutation type.',
   fields: {
-    createAccount,
-    login,
-    transfer,
+    CreateAccount,
+    Login,
+    Transfer,
   },
 });
 
 export const schema = new GraphQLSchema({
   query: RootQuery,
-  mutation: RootMutation,
+  mutation: MutationType,
 });
