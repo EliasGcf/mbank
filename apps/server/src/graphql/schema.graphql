@@ -100,6 +100,9 @@ type TransactionEdge {
 type Transaction implements Node {
   """The ID of an object"""
   id: ID!
+
+  """The idempotence key of the transaction"""
+  idempotenceKey: String!
   fromAccount: Account!
   toAccount: Account!
   amountInCents: Int!
@@ -155,5 +158,8 @@ input TransferInput {
 
   """The description of the transfer"""
   description: String
+
+  """The idempotence key"""
+  idempotenceKey: String!
   clientMutationId: String
 }

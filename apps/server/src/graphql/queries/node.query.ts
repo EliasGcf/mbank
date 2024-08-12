@@ -1,9 +1,9 @@
 import { fromGlobalId, nodeDefinitions } from 'graphql-relay';
 
+import { verifyRequiredJWT } from '@lib/jwt';
+
 import { getAccount } from '@services/account.service';
 import { getTransaction } from '@services/transaction.service';
-
-import { verifyRequiredJWT } from '@lib/jwt';
 
 function setType(obj: Record<string, unknown> | null, type: string) {
   if (!obj) return null;

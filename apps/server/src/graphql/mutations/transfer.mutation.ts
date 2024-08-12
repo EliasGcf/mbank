@@ -13,6 +13,7 @@ const argsSchema = z.object({
   toAccountId: z.string(),
   amountInCents: z.number().int(),
   description: z.string().optional(),
+  idempotenceKey: z.string(),
 });
 
 export const Transfer = mutationWithClientMutationId({
@@ -31,6 +32,10 @@ export const Transfer = mutationWithClientMutationId({
       type: GraphQLString,
       description: 'The description of the transfer',
     },
+    idempotenceKey: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The idempotence key',
+    },
   },
   mutateAndGetPayload: async (_args, ctx) => {
     const args = argsSchema.parse(_args);
@@ -42,6 +47,7 @@ export const Transfer = mutationWithClientMutationId({
       toAccountId,
       amountInCents: args.amountInCents,
       description: args.description,
+      idempotenceKey: args.idempotenceKey,
     });
 
     return { account, transaction };

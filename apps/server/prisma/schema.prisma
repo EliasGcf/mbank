@@ -23,15 +23,17 @@ model Account {
 }
 
 model Transaction {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  fromAccountId String   @db.ObjectId
-  toAccountId   String   @db.ObjectId
-  amountInCents Int
-  description   String?
-  createdAt     DateTime @default(now())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  idempotenceKey String   @unique
+  fromAccountId  String   @db.ObjectId
+  toAccountId    String   @db.ObjectId
+  amountInCents  Int
+  description    String?
+  createdAt      DateTime @default(now())
 
   from Account @relation("fromAccount", fields: [fromAccountId], references: [id])
   to   Account @relation("toAccount", fields: [toAccountId], references: [id])
 
+  @@unique([idempotenceKey, fromAccountId, toAccountId])
   @@map("transactions")
 }

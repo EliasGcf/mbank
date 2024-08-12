@@ -2,14 +2,19 @@ import { GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'gr
 import { connectionDefinitions, globalIdField } from 'graphql-relay';
 
 import { nodeInterface } from '@graphql/queries/node.query';
-import { getAccount } from '@services/account.service';
 
 import { verifyRequiredJWT } from '@lib/jwt';
+
+import { getAccount } from '@services/account.service';
 
 export const TransactionType: GraphQLObjectType = new GraphQLObjectType({
   name: 'Transaction',
   fields: () => ({
     id: globalIdField('Transaction'),
+    idempotenceKey: {
+      type: new GraphQLNonNull(GraphQLString),
+      description: 'The idempotence key of the transaction',
+    },
     fromAccount: {
       type: new GraphQLNonNull(require('./account.type').AccountType),
       resolve: async (data, _, ctx) => {

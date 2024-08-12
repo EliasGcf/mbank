@@ -2,8 +2,9 @@ import { GraphQLNonNull, GraphQLString } from 'graphql';
 import { mutationWithClientMutationId } from 'graphql-relay';
 import { z } from 'zod';
 
-import { createAccount } from '@services/account.service';
 import { AccountType } from '@graphql/types/account.type';
+
+import { createAccount } from '@services/account.service';
 
 const argsSchema = z
   .object({

@@ -44,6 +44,7 @@ export async function getTransactions(params: GetTransactionsParams) {
 }
 
 interface TransferParams {
+  idempotenceKey: string;
   loggedInAccountId: string;
   toAccountId: string;
   amountInCents: number;
@@ -72,6 +73,23 @@ export async function transfer(params: TransferParams) {
     throw new Error('It is not possible to transfer to the same account');
   }
 
+  const transactionFromIdempotenceKey = await prisma.transaction.findUnique({
+    where: {
+      idempotenceKey_fromAccountId_toAccountId: {
+        idempotenceKey: params.idempotenceKey,
+        fromAccountId: params.loggedInAccountId,
+        toAccountId: params.toAccountId,
+      },
+    },
+  });
+
+  if (transactionFromIdempotenceKey) {
+    return {
+      account: fromAccount,
+      transaction: transactionFromIdempotenceKey,
+    };
+  }
+
   const [updatedFromAccount, , transaction] = await prisma.$transaction([
     prisma.account.update({
       where: { id: fromAccount.id },
@@ -88,6 +106,7 @@ export async function transfer(params: TransferParams) {
         toAccountId: toAccount.id,
         amountInCents: params.amountInCents,
         description: params.description,
+        idempotenceKey: params.idempotenceKey,
       },
     }),
   ]);
