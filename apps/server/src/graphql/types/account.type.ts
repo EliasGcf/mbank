@@ -6,10 +6,11 @@ import {
 } from 'graphql-relay';
 
 import { nodeInterface } from '@graphql/queries/node.query';
-import { getTransactions } from '@services/transaction.service';
 import { TransactionConnection } from '@graphql/types/transaction.type';
 
 import { verifyJWT } from '@lib/jwt';
+
+import { getTransactionsService } from '@services/get-transactions.service';
 
 export const AccountType: GraphQLObjectType = new GraphQLObjectType({
   name: 'Account',
@@ -45,7 +46,7 @@ export const AccountType: GraphQLObjectType = new GraphQLObjectType({
         if (jwt.sub !== account.id) return null;
 
         return connectionFromPromisedArray(
-          getTransactions({ loggedInAccountId: jwt.sub }),
+          getTransactionsService({ loggedInAccountId: jwt.sub }),
           args,
         );
       },

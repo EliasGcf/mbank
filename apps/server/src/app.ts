@@ -8,6 +8,11 @@ import { schema } from '@graphql/schema';
 const app = new Koa();
 const router = new Router();
 
+router.get('/health', (ctx) => {
+  ctx.body = 'OK';
+  ctx.status = 200;
+});
+
 router.all('/playground', koaPlayground({ endpoint: '/graphql' }));
 router.all(
   '/graphql',

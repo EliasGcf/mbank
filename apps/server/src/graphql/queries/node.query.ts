@@ -2,8 +2,8 @@ import { fromGlobalId, nodeDefinitions } from 'graphql-relay';
 
 import { verifyRequiredJWT } from '@lib/jwt';
 
-import { getAccount } from '@services/account.service';
-import { getTransaction } from '@services/transaction.service';
+import { getAccountService } from '@services/get-account.service';
+import { getTransactionService } from '@services/get-transaction.service';
 
 function setType(obj: Record<string, unknown> | null, type: string) {
   if (!obj) return null;
@@ -18,7 +18,10 @@ export const { nodeField, nodesField, nodeInterface } = nodeDefinitions(
     if (type === 'Account') {
       const jwt = verifyRequiredJWT(ctx.jwt);
 
-      const account = await getAccount({ loggedInAccountId: jwt.sub, accountId: id });
+      const account = await getAccountService({
+        loggedInAccountId: jwt.sub,
+        accountId: id,
+      });
 
       return setType(account, 'Account');
     }
@@ -26,7 +29,7 @@ export const { nodeField, nodesField, nodeInterface } = nodeDefinitions(
     if (type === 'Transaction') {
       const jwt = verifyRequiredJWT(ctx.jwt);
 
-      const transaction = await getTransaction({
+      const transaction = await getTransactionService({
         loggedInAccountId: jwt.sub,
         transactionId: id,
       });

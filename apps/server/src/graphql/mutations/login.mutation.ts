@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 import { AccountType } from '@graphql/types/account.type';
 
-import { login } from '@services/account.service';
+import { loginService } from '@services/login.service';
 
 const argsSchema = z.object({
   email: z.string().email(),
@@ -27,7 +27,7 @@ export const Login = mutationWithClientMutationId({
   mutateAndGetPayload: async (_args) => {
     const args = argsSchema.parse(_args);
 
-    const { token, account } = await login({
+    const { token, account } = await loginService({
       email: args.email,
       password: args.password,
     });

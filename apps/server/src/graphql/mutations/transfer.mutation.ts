@@ -7,7 +7,7 @@ import { TransactionType } from '@graphql/types/transaction.type';
 
 import { verifyRequiredJWT } from '@lib/jwt';
 
-import { transfer } from '@services/transaction.service';
+import { transferService } from '@services/transfer.service';
 
 const argsSchema = z.object({
   toAccountId: z.string(),
@@ -42,7 +42,7 @@ export const Transfer = mutationWithClientMutationId({
     const { sub } = verifyRequiredJWT(ctx.jwt);
     const { id: toAccountId } = fromGlobalId(args.toAccountId);
 
-    const { account, transaction } = await transfer({
+    const { account, transaction } = await transferService({
       loggedInAccountId: sub,
       toAccountId,
       amountInCents: args.amountInCents,

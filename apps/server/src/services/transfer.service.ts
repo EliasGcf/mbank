@@ -1,51 +1,5 @@
 import { prisma } from '@lib/prisma';
 
-interface GetTransactionParams {
-  loggedInAccountId: string;
-  transactionId: string;
-}
-
-export async function getTransaction(params: GetTransactionParams) {
-  const account = await prisma.account.findUnique({
-    where: { id: params.loggedInAccountId },
-    select: {
-      id: true,
-      receivedTransactions: {
-        where: { id: params.transactionId },
-      },
-      sendedTransactions: {
-        where: { id: params.transactionId },
-      },
-    },
-  });
-
-  if (!account) throw new Error('Account not found');
-
-  const transaction = account.receivedTransactions[0] || account.sendedTransactions[0];
-
-  if (!transaction) throw new Error('Transaction not found');
-
-  return transaction;
-}
-
-interface GetTransactionsParams {
-  loggedInAccountId: string;
-}
-
-export async function getTransactions(params: GetTransactionsParams) {
-  const transactions = await prisma.transaction.findMany({
-    orderBy: { createdAt: 'desc' },
-    where: {
-      OR: [
-        { fromAccountId: params.loggedInAccountId },
-        { toAccountId: params.loggedInAccountId },
-      ],
-    },
-  });
-
-  return transactions;
-}
-
 interface TransferParams {
   idempotenceKey: string;
   loggedInAccountId: string;
@@ -54,7 +8,7 @@ interface TransferParams {
   description?: string;
 }
 
-export async function transfer(params: TransferParams) {
+export async function transferService(params: TransferParams) {
   const fromAccount = await prisma.account.findUnique({
     where: { id: params.loggedInAccountId },
     omit: { amountInCents: false },
