@@ -36,7 +36,7 @@ export const Login = mutationWithClientMutationId({
   },
   outputFields: {
     token: {
-      type: GraphQLString,
+      type: new GraphQLNonNull(GraphQLString),
       resolve: (payload) => payload.token,
     },
     account: {

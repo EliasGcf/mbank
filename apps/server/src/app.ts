@@ -1,3 +1,4 @@
+import cors from '@koa/cors';
 import Router from '@koa/router';
 import { createHandler } from 'graphql-http/lib/use/koa';
 import koaPlayground from 'graphql-playground-middleware-koa';
@@ -7,6 +8,8 @@ import { schema } from '@graphql/schema';
 
 const app = new Koa();
 const router = new Router();
+
+app.use(cors());
 
 router.get('/health', (ctx) => {
   ctx.body = 'OK';
