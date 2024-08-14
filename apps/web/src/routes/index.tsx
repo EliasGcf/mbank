@@ -1,33 +1,57 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter, redirect } from 'react-router-dom';
 
-import { NotFound } from "@/routes/404";
-import { AuthLayout } from "@/routes/auth/auth.layout";
-import { SignInPage } from "@/routes/auth/sign-in.page";
-import { SignUpPage } from "@/routes/auth/sign-up.page";
+import { NotFound } from '@/routes/404';
+import { AuthLayout } from '@/routes/auth/auth.layout';
+import { SignInPage } from '@/routes/auth/sign-in.page';
+import { SignUpPage } from '@/routes/auth/sign-up.page';
+import { ErrorPage } from '@/routes/error.page';
+import { AppLayout } from '@/routes/app/app.layout';
+import { DashboardPage } from '@/routes/app/dashboard.page';
 
 export const router = createBrowserRouter([
   {
-    element: <AuthLayout />,
+    element: <AppLayout />,
+    errorElement: <ErrorPage />,
+    id: 'app',
     loader: async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
+      if (!token) return redirect('/sign-in');
 
-      if (token) {
-        return redirect("/");
+      const accountId = localStorage.getItem('accountId');
+      if (!accountId) return redirect('/sign-in');
+
+      return {
+        accountId,
       }
     },
     children: [
       {
-        path: "/sign-in",
+        path: '/',
+        element: <DashboardPage />,
+      },
+    ],
+  },
+  {
+    element: <AuthLayout />,
+    errorElement: <ErrorPage />,
+    loader: async () => {
+      const token = localStorage.getItem('token');
+      if (token) return redirect('/');
+      return null;
+    },
+    children: [
+      {
+        path: '/sign-in',
         element: <SignInPage />,
       },
       {
-        path: "/sign-up",
+        path: '/sign-up',
         element: <SignUpPage />,
       },
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <NotFound />,
   },
 ]);

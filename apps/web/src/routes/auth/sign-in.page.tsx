@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from 'react-relay';
 
 import { LoaderCircleIcon } from 'lucide-react';
@@ -35,6 +35,7 @@ const formSchema = z.object({
 
 export function SignInPage() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,8 +50,10 @@ export function SignInPage() {
     commitMutation({
       variables: { data: values },
       onCompleted: (response) => {
-        if (response.Login?.token) {
+        if (response.Login?.token && response.Login.account?.id) {
           localStorage.setItem('token', response.Login.token);
+          localStorage.setItem('accountId', response.Login.account?.id)
+          navigate('/');
         }
       },
     });
