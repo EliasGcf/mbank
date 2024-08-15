@@ -23,8 +23,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { LoginMutation } from "@/graphql/mutations/__generated__/LoginMutation.graphql";
-import { loginMutation } from "@/graphql/mutations/Login.mutation";
+import { LoginMutation } from '@/graphql/mutations/__generated__/LoginMutation.graphql';
+import { loginMutation } from '@/graphql/mutations/Login.mutation';
 
 const formSchema = z.object({
   email: z
@@ -50,9 +50,8 @@ export function SignInPage() {
     commitMutation({
       variables: { data: values },
       onCompleted: (response) => {
-        if (response.Login?.token && response.Login.account?.id) {
+        if (response.Login?.token) {
           localStorage.setItem('token', response.Login.token);
-          localStorage.setItem('accountId', response.Login.account?.id)
           navigate('/');
         }
       },

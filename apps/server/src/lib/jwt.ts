@@ -1,5 +1,6 @@
-import { env } from '@env';
 import jwt from 'jsonwebtoken';
+
+import { env } from '@env';
 
 interface JWTPayload {
   sub: string;

@@ -29,6 +29,12 @@ router.all(
   }),
 );
 
+// Add delay to all response
+// app.use(async (ctx, next) => {
+//   await next();
+//   await new Promise((resolve) => setTimeout(resolve, 700));
+// });
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 

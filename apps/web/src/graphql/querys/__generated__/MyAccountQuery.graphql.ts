@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<10d0a0b0d59052f96965a0059ed29334>>
+ * @generated SignedSource<<a5c7145d261383a2e6f5345eee77da94>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -9,39 +9,25 @@
 // @ts-nocheck
 
 import { ConcreteRequest, Query } from 'relay-runtime';
-export type AccountQuery$variables = {
-  email: string;
-};
-export type AccountQuery$data = {
+export type MyAccountQuery$variables = Record<PropertyKey, never>;
+export type MyAccountQuery$data = {
   readonly account: {
+    readonly amountInCents: number | null | undefined;
     readonly email: string;
     readonly id: string;
     readonly name: string;
   } | null | undefined;
 };
-export type AccountQuery = {
-  response: AccountQuery$data;
-  variables: AccountQuery$variables;
+export type MyAccountQuery = {
+  response: MyAccountQuery$data;
+  variables: MyAccountQuery$variables;
 };
 
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "email"
-  }
-],
-v1 = [
-  {
     "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "email",
-        "variableName": "email"
-      }
-    ],
+    "args": null,
     "concreteType": "Account",
     "kind": "LinkedField",
     "name": "account",
@@ -67,6 +53,13 @@ v1 = [
         "kind": "ScalarField",
         "name": "email",
         "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "amountInCents",
+        "storageKey": null
       }
     ],
     "storageKey": null
@@ -74,32 +67,32 @@ v1 = [
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
-    "name": "AccountQuery",
-    "selections": (v1/*: any*/),
+    "name": "MyAccountQuery",
+    "selections": (v0/*: any*/),
     "type": "Query",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Operation",
-    "name": "AccountQuery",
-    "selections": (v1/*: any*/)
+    "name": "MyAccountQuery",
+    "selections": (v0/*: any*/)
   },
   "params": {
-    "cacheID": "e5a14dc5729675159a65bf31c806bf28",
+    "cacheID": "cf01680131ee0d7e1ec5c5d8ce86579d",
     "id": null,
     "metadata": {},
-    "name": "AccountQuery",
+    "name": "MyAccountQuery",
     "operationKind": "query",
-    "text": "query AccountQuery(\n  $email: String!\n) {\n  account(email: $email) {\n    id\n    name\n    email\n  }\n}\n"
+    "text": "query MyAccountQuery {\n  account {\n    id\n    name\n    email\n    amountInCents\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "aeeae68b406acb020e0ca1ad9fe0291d";
+(node as any).hash = "2f34a28e5aa27724ab7f2dced25a225e";
 
 export default node;

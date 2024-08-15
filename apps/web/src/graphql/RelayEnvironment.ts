@@ -1,23 +1,17 @@
-import {
-  Environment,
-  Network,
-  RecordSource,
-  Store,
-  FetchFunction,
-} from "relay-runtime";
+import { Environment, Network, RecordSource, Store, FetchFunction } from 'relay-runtime';
 
-const HTTP_ENDPOINT = "http://localhost:3333/graphql";
+const HTTP_ENDPOINT = 'http://localhost:3333/graphql';
 
 const fetchFn: FetchFunction = async (request, variables) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
 
   const resp = await fetch(HTTP_ENDPOINT, {
-    method: "POST",
+    method: 'POST',
     headers: {
       Accept:
-        "application/graphql-response+json; charset=utf-8, application/json; charset=utf-8",
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : "",
+        'application/graphql-response+json; charset=utf-8, application/json; charset=utf-8',
+      'Content-Type': 'application/json',
+      Authorization: token ? `Bearer ${token}` : '',
     },
     body: JSON.stringify({
       query: request.text,
@@ -25,7 +19,13 @@ const fetchFn: FetchFunction = async (request, variables) => {
     }),
   });
 
-  return await resp.json();
+  const json = await resp.json();
+
+  if (json.errors) {
+    throw new Error(json.errors[0].message);
+  }
+
+  return json;
 };
 
 function createRelayEnvironment() {

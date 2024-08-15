@@ -13,31 +13,13 @@ type Query {
     """The IDs of objects"""
     ids: [ID!]!
   ): [Node]!
+  account(email: String): Account
 }
 
 """An object with an ID"""
 interface Node {
   """The id of the object."""
   id: ID!
-}
-
-"""The root Mutation type."""
-type Mutation {
-  """Create a new account"""
-  CreateAccount(input: CreateAccountInput!): CreateAccountPayload
-
-  """Get the token to use for authentication"""
-  Login(input: LoginInput!): LoginPayload
-
-  """
-  Transfer money from the logged in account to another account. Require authentication.
-  """
-  Transfer(input: TransferInput!): TransferPayload
-}
-
-type CreateAccountPayload {
-  account: Account
-  clientMutationId: String
 }
 
 """Account"""
@@ -108,6 +90,25 @@ type Transaction implements Node {
   amountInCents: Int!
   description: String
   createdAt: String!
+}
+
+"""The root Mutation type."""
+type Mutation {
+  """Create a new account"""
+  CreateAccount(input: CreateAccountInput!): CreateAccountPayload
+
+  """Get the token to use for authentication"""
+  Login(input: LoginInput!): LoginPayload
+
+  """
+  Transfer money from the logged in account to another account. Require authentication.
+  """
+  Transfer(input: TransferInput!): TransferPayload
+}
+
+type CreateAccountPayload {
+  account: Account
+  clientMutationId: String
 }
 
 input CreateAccountInput {

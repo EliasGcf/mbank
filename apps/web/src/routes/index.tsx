@@ -17,12 +17,7 @@ export const router = createBrowserRouter([
       const token = localStorage.getItem('token');
       if (!token) return redirect('/sign-in');
 
-      const accountId = localStorage.getItem('accountId');
-      if (!accountId) return redirect('/sign-in');
-
-      return {
-        accountId,
-      }
+      return null;
     },
     children: [
       {

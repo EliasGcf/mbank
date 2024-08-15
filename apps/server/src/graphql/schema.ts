@@ -3,6 +3,7 @@ import { GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
 import { CreateAccount } from '@graphql/mutations/create-account.mutation';
 import { Login } from '@graphql/mutations/login.mutation';
 import { Transfer } from '@graphql/mutations/transfer.mutation';
+import { AccountQuery } from '@graphql/queries/account.query';
 import { nodeField, nodesField } from '@graphql/queries/node.query';
 
 const RootQuery = new GraphQLObjectType({
@@ -12,6 +13,7 @@ const RootQuery = new GraphQLObjectType({
     hello: { type: GraphQLString, resolve: () => 'Hello world!' },
     node: nodeField,
     nodes: nodesField,
+    account: AccountQuery,
   },
 });
 
