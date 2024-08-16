@@ -4,7 +4,11 @@ import { formatCurrency } from '@/utils/format-currency';
 import { useLazyLoadQuery } from 'react-relay';
 
 export function useMyAccount() {
-  const data = useLazyLoadQuery<MyAccountQuery>(myAccountQuery, {});
+  const data = useLazyLoadQuery<MyAccountQuery>(
+    myAccountQuery,
+    {},
+    { fetchPolicy: 'network-only' },
+  );
 
   const balance = (data.account?.amountInCents ?? 0) / 100;
   const balanceFormatted = formatCurrency(balance);

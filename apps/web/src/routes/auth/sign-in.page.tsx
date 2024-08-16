@@ -55,6 +55,9 @@ export function SignInPage() {
           navigate('/');
         }
       },
+      onError: (error) => {
+        form.setError('root.server', { message: error.message });
+      },
     });
   }
 
@@ -100,10 +103,15 @@ export function SignInPage() {
               )}
             />
           </CardContent>
-          <CardFooter>
+
+          <CardFooter className="flex flex-col gap-2 -mb-2">
             <Button className="w-full" type="submit">
               {isMutating ? <LoaderCircleIcon className="animate-spin" /> : 'Login'}
             </Button>
+
+            <span className="text-sm font-medium text-destructive">
+              {form.formState.errors.root?.server.message}
+            </span>
           </CardFooter>
         </Card>
       </form>
