@@ -20,7 +20,14 @@ const fetchFn: FetchFunction = async (request, variables) => {
   const json = await resp.json();
 
   if (json.errors) {
-    throw new Error(json.errors[0].message);
+    const error = new Error(json.errors[0].message);
+
+    if (error.message === 'Unauthorized') {
+      localStorage.removeItem('token');
+      window.location.reload();
+    }
+
+    throw error;
   }
 
   return json;

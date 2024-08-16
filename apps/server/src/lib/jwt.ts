@@ -7,7 +7,7 @@ interface JWTPayload {
 }
 
 export function signJWT(payload: JWTPayload) {
-  return jwt.sign(payload, env.JWT_SECRET);
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: '30m' });
 }
 
 export function verifyJWT(token: string) {
