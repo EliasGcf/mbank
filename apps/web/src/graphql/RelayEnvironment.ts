@@ -1,11 +1,9 @@
 import { Environment, Network, RecordSource, Store, FetchFunction } from 'relay-runtime';
 
-const HTTP_ENDPOINT = 'http://localhost:3333/graphql';
-
 const fetchFn: FetchFunction = async (request, variables) => {
   const token = localStorage.getItem('token');
 
-  const resp = await fetch(HTTP_ENDPOINT, {
+  const resp = await fetch(import.meta.env.VITE_GRAPHQL_API_URL, {
     method: 'POST',
     headers: {
       Accept:
