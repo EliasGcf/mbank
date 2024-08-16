@@ -28,9 +28,9 @@ import { loginMutation } from '@/graphql/mutations/Login.mutation';
 
 const formSchema = z.object({
   email: z
-    .string({ required_error: 'Email é obrigatório' })
-    .email({ message: 'Email inválido' }),
-  password: z.string({ required_error: 'Senha é obrigatória' }),
+    .string({ required_error: 'Email is required' })
+    .email({ message: 'Invalid email' }),
+  password: z.string({ required_error: 'Password is required' }),
 });
 
 export function SignInPage() {
@@ -68,9 +68,9 @@ export function SignInPage() {
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
-              Não tem uma conta?{' '}
+              Don't have an account?{' '}
               <Link to="/sign-up" className="underline">
-                Registre-se
+                Sign up
               </Link>
             </CardDescription>
           </CardHeader>
@@ -82,7 +82,7 @@ export function SignInPage() {
                 <FormItem className="grid gap-2">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="seu-email@example.com" {...field} />
+                    <Input placeholder="your-email@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -94,7 +94,7 @@ export function SignInPage() {
               name="password"
               render={({ field }) => (
                 <FormItem className="grid gap-2">
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>

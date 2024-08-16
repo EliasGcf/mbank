@@ -23,18 +23,18 @@ import {
 } from '@/components/ui/form';
 import { useMutation } from 'react-relay';
 import { LoaderCircleIcon } from 'lucide-react';
-import { createAccountMutation } from "@/graphql/mutations/CreateAccount.mutation";
-import { CreateAccountMutation } from "@/graphql/mutations/__generated__/CreateAccountMutation.graphql";
+import { createAccountMutation } from '@/graphql/mutations/CreateAccount.mutation';
+import { CreateAccountMutation } from '@/graphql/mutations/__generated__/CreateAccountMutation.graphql';
 
 const formSchema = z
   .object({
-    name: z.string({ required_error: 'Nome é obrigatório' }),
+    name: z.string({ required_error: 'Name is required' }),
     email: z
-      .string({ required_error: 'Email é obrigatório' })
-      .email({ message: 'Email inválido' }),
-    password: z.string({ required_error: 'Senha é obrigatória' }),
+      .string({ required_error: 'Email is required' })
+      .email({ message: 'Invalid email' }),
+    password: z.string({ required_error: 'Password is required' }),
     passwordConfirmation: z.string({
-      required_error: 'Confirmação de senha é obrigatória',
+      required_error: 'Password confirmation is required',
     }),
   })
   .superRefine((data, ctx) => {
@@ -47,8 +47,6 @@ const formSchema = z
     }
   });
 
-
-
 export function SignUpPage() {
   const navigate = useNavigate();
 
@@ -56,7 +54,8 @@ export function SignUpPage() {
     resolver: zodResolver(formSchema),
   });
 
-  const [commitMutation, isMutating] = useMutation<CreateAccountMutation>(createAccountMutation);
+  const [commitMutation, isMutating] =
+    useMutation<CreateAccountMutation>(createAccountMutation);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     commitMutation({
@@ -74,10 +73,8 @@ export function SignUpPage() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full flex justify-center">
         <Card className="mx-auto max-w-sm w-full">
           <CardHeader>
-            <CardTitle className="text-xl">Cadastro</CardTitle>
-            <CardDescription>
-              Insira suas informações para criar uma conta
-            </CardDescription>
+            <CardTitle className="text-xl">Sign Up</CardTitle>
+            <CardDescription>Enter your information to create an account</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <FormField
@@ -85,9 +82,9 @@ export function SignUpPage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="João" {...field} />
+                    <Input placeholder="John" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -101,7 +98,7 @@ export function SignUpPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="seu-email@example.com" {...field} />
+                    <Input placeholder="your-email@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,7 +110,7 @@ export function SignUpPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
@@ -127,7 +124,7 @@ export function SignUpPage() {
               name="passwordConfirmation"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirmação de senha</FormLabel>
+                  <FormLabel>Password Confirmation</FormLabel>
                   <FormControl>
                     <Input type="password" {...field} />
                   </FormControl>
@@ -139,13 +136,17 @@ export function SignUpPage() {
 
           <CardFooter className="flex-col">
             <Button type="submit" className="w-full">
-              {isMutating ? <LoaderCircleIcon className="animate-spin" /> : 'Criar conta'}
+              {isMutating ? (
+                <LoaderCircleIcon className="animate-spin" />
+              ) : (
+                'Create Account'
+              )}
             </Button>
 
             <div className="mt-4 text-center text-sm">
-              Já possui uma conta?{' '}
+              Already have an account?{' '}
               <Link to="/sign-in" className="underline">
-                Entrar
+                Sign In
               </Link>
             </div>
           </CardFooter>
