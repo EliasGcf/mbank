@@ -1,4 +1,4 @@
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
 
 interface GetAccountParams {
   loggedInAccountId: string;
@@ -17,19 +17,16 @@ export async function getAccountByIdOrEmailService(
   params: GetAccountParams,
 ): Promise<Result> {
   if (!params.email) {
-    const account = await prisma.account.findUnique({
-      where: { id: params.loggedInAccountId },
-      omit: { amountInCents: false },
-    });
+    const account = await Account.findById(params.loggedInAccountId).select(
+      '+amountInCents',
+    );
 
     if (!account) throw new Error('Account not found');
 
     return account;
   }
 
-  const account = await prisma.account.findUnique({
-    where: { email: params.email },
-  });
+  const account = await Account.findOne({ email: params.email });
 
   if (!account) throw new Error('Account not found');
 

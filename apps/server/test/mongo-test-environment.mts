@@ -1,9 +1,8 @@
 import 'dotenv/config';
 
-import { execSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
-import { PrismaClient } from '@prisma/client';
+import mongoose from 'mongoose';
 import { Environment } from 'vitest/environments';
 
 function generateDatabaseURL(id: string) {
@@ -27,15 +26,12 @@ export default {
 
     process.env.DATABASE_URL = databaseURL;
 
-    execSync('npx prisma db push');
+    const db = await mongoose.connect(databaseURL);
 
     return {
       async teardown() {
-        const prisma = new PrismaClient();
-
-        await prisma.$runCommandRaw({ dropDatabase: 1 });
-
-        await prisma.$disconnect();
+        await db.connection.db?.dropDatabase();
+        await db.connection.close();
       },
     };
   },

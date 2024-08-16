@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 
 import supertest from 'supertest';
 
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
+import { Transaction } from '@models/transaction.model';
 
 import { app } from '@app';
 
@@ -15,11 +16,7 @@ describe('(Mutation) Transfer', () => {
       createFakeAccount(),
     ]);
 
-    // TODO: Add deposit?
-    await prisma.account.update({
-      where: { email: senderAccount.email },
-      data: { amountInCents: 100_00 },
-    });
+    await Account.updateOne({ email: senderAccount.email }, { amountInCents: 100_00 });
 
     const loginResponse = await supertest(app.callback())
       .post('/graphql')
@@ -64,12 +61,10 @@ describe('(Mutation) Transfer', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    const rawTransfer = await prisma.transaction.findUnique({
-      where: { idempotenceKey },
-    });
+    const rawTransfer = await Transaction.findOne({ idempotenceKey });
 
     expect(rawTransfer).toBeTruthy();
-    expect(rawTransfer).toMatchObject({
+    expect(JSON.parse(JSON.stringify(rawTransfer))).toMatchObject({
       fromAccountId: senderAccount.id,
       toAccountId: recipientAccount.id,
       amountInCents: 10_00,
@@ -77,14 +72,8 @@ describe('(Mutation) Transfer', () => {
     });
 
     const [rawSender, rawRecipient] = await Promise.all([
-      prisma.account.findUnique({
-        where: { id: senderAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.account.findUnique({
-        where: { id: recipientAccount.id },
-        omit: { amountInCents: false },
-      }),
+      Account.findById(senderAccount.id).select('+amountInCents'),
+      Account.findById(recipientAccount.id).select('+amountInCents'),
     ]);
 
     expect(rawSender?.amountInCents).toBe(90_00);
@@ -146,9 +135,7 @@ describe('(Mutation) Transfer', () => {
       ]),
     );
 
-    const rawTransfer = await prisma.transaction.findUnique({
-      where: { idempotenceKey },
-    });
+    const rawTransfer = await Transaction.findOne({ idempotenceKey });
 
     expect(rawTransfer).toBeNull();
   });
@@ -159,10 +146,7 @@ describe('(Mutation) Transfer', () => {
       createFakeAccount(),
     ]);
 
-    await prisma.account.update({
-      where: { email: senderAccount.email },
-      data: { amountInCents: 100_00 },
-    });
+    await Account.updateOne({ email: senderAccount.email }, { amountInCents: 100_00 });
 
     const loginResponse = await supertest(app.callback())
       .post('/graphql')
@@ -229,10 +213,7 @@ describe('(Mutation) Transfer', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
-    const rawSender = await prisma.account.findUnique({
-      where: { id: senderAccount.id },
-      omit: { amountInCents: false },
-    });
+    const rawSender = await Account.findById(senderAccount.id).select('+amountInCents');
 
     expect(rawSender?.amountInCents).toBe(90_00);
   });

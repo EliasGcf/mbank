@@ -5,9 +5,9 @@ import { verifyRequiredJWT } from '@lib/jwt';
 import { getAccountService } from '@services/get-account.service';
 import { getTransactionService } from '@services/get-transaction.service';
 
-function setType(obj: Record<string, unknown> | null, type: string) {
+function setType(obj: object | null, type: string) {
   if (!obj) return null;
-  obj['_type'] = type;
+  Object.assign(obj, { _type: type });
   return obj;
 }
 

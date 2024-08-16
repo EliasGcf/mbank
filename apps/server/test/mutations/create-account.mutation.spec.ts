@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
 
 import { app } from '@app';
 
@@ -31,9 +31,7 @@ describe('(Mutation) CreateAccount', () => {
       })
       .expect(200);
 
-    const rawAccount = await prisma.account.findUnique({
-      where: { email: 'user01@gmail.com' },
-    });
+    const rawAccount = await Account.findOne({ email: 'user01@gmail.com' });
 
     expect(rawAccount).toBeTruthy();
     expect(response.body.data.CreateAccount).toMatchObject({

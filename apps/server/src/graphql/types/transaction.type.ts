@@ -5,6 +5,8 @@ import { nodeInterface } from '@graphql/queries/node.query';
 
 import { verifyRequiredJWT } from '@lib/jwt';
 
+import { TransactionProps } from '@models/transaction.model';
+
 import { getAccountService } from '@services/get-account.service';
 
 export const TransactionType: GraphQLObjectType = new GraphQLObjectType({
@@ -17,11 +19,11 @@ export const TransactionType: GraphQLObjectType = new GraphQLObjectType({
     },
     fromAccount: {
       type: new GraphQLNonNull(require('./account.type').AccountType),
-      resolve: async (data, _, ctx) => {
+      resolve: async (data: TransactionProps, _, ctx) => {
         const jwt = verifyRequiredJWT(ctx.jwt);
 
         const account = await getAccountService({
-          accountId: data.fromAccountId,
+          accountId: data.fromAccountId.toString(),
           loggedInAccountId: jwt.sub,
         });
 
@@ -30,11 +32,11 @@ export const TransactionType: GraphQLObjectType = new GraphQLObjectType({
     },
     toAccount: {
       type: new GraphQLNonNull(require('./account.type').AccountType),
-      resolve: async (data, _, ctx) => {
+      resolve: async (data: TransactionProps, _, ctx) => {
         const jwt = verifyRequiredJWT(ctx.jwt);
 
         const account = await getAccountService({
-          accountId: data.toAccountId,
+          accountId: data.toAccountId.toString(),
           loggedInAccountId: jwt.sub,
         });
 

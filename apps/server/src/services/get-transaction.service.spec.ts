@@ -1,8 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 
-import { prisma } from '@lib/prisma';
-
 import { createAccountService } from '@services/create-account.service';
 import { getTransactionService } from '@services/get-transaction.service';
 import { transferService } from '@services/transfer.service';
@@ -23,10 +21,8 @@ describe('GetTransactionService', () => {
     ]);
 
     // Deposit?
-    await prisma.account.update({
-      where: { id: senderAccount.id },
-      data: { amountInCents: 100_00 },
-    });
+    senderAccount.amountInCents = 100_00;
+    await senderAccount.save();
 
     const transfer = await transferService({
       idempotenceKey: randomUUID(),
@@ -41,7 +37,7 @@ describe('GetTransactionService', () => {
       transactionId: transfer.transaction.id,
     });
 
-    expect(transaction).toMatchObject(transfer.transaction);
+    expect(transaction?.toJSON()).toMatchObject(transfer.transaction.toJSON());
   });
 
   it('should not be able to get a transaction if the logged in account does not exist', async () => {

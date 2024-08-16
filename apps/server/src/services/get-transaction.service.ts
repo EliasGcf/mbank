@@ -1,4 +1,5 @@
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
+import { Transaction } from '@models/transaction.model';
 
 interface GetTransactionParams {
   loggedInAccountId: string;
@@ -6,22 +7,11 @@ interface GetTransactionParams {
 }
 
 export async function getTransactionService(params: GetTransactionParams) {
-  const account = await prisma.account.findUnique({
-    where: { id: params.loggedInAccountId },
-    select: {
-      id: true,
-      receivedTransactions: {
-        where: { id: params.transactionId },
-      },
-      sendedTransactions: {
-        where: { id: params.transactionId },
-      },
-    },
-  });
+  const account = await Account.findById(params.loggedInAccountId);
 
   if (!account) throw new Error('Account not found');
 
-  const transaction = account.receivedTransactions[0] || account.sendedTransactions[0];
+  const transaction = await Transaction.findById(params.transactionId);
 
   if (!transaction) throw new Error('Transaction not found');
 

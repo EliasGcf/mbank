@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
+import { Transaction } from '@models/transaction.model';
 
 import { createAccountService } from '@services/create-account.service';
 import { getTransactionsService } from '@services/get-transactions.service';
@@ -23,10 +24,8 @@ describe('GetTransactionsService', () => {
     ]);
 
     // Deposit?
-    await prisma.account.update({
-      where: { id: senderAccount.id },
-      data: { amountInCents: 100_00 },
-    });
+    senderAccount.amountInCents = 100_00;
+    await senderAccount.save();
 
     await Promise.all([
       transferService({
@@ -56,24 +55,16 @@ describe('GetTransactionsService', () => {
     expect(transactions).toHaveLength(3);
     expect(transactions).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ fromAccountId: senderAccount.id }),
-        expect.objectContaining({ toAccountId: recipientAccount.id }),
+        expect.objectContaining({ fromAccountId: senderAccount._id }),
+        expect.objectContaining({ toAccountId: recipientAccount._id }),
       ]),
     );
 
     const [rawSenderAccount, rawRecipientAccount, countTransactions] = await Promise.all([
-      prisma.account.findUnique({
-        where: { id: senderAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.account.findUnique({
-        where: { id: recipientAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.transaction.count({
-        where: {
-          OR: [{ fromAccountId: senderAccount.id }, { toAccountId: senderAccount.id }],
-        },
+      Account.findById(senderAccount.id).select('+amountInCents'),
+      Account.findById(recipientAccount.id).select('+amountInCents'),
+      Transaction.countDocuments({
+        $or: [{ fromAccountId: senderAccount.id }, { toAccountId: senderAccount.id }],
       }),
     ]);
 

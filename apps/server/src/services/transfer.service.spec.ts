@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 
 import { faker } from '@faker-js/faker';
 
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
+import { Transaction } from '@models/transaction.model';
 
 import { createAccountService } from '@services/create-account.service';
 import { transferService } from '@services/transfer.service';
@@ -22,11 +23,9 @@ describe('TransferService', () => {
       }),
     ]);
 
-    // Deposit?
-    await prisma.account.update({
-      where: { id: senderAccount.id },
-      data: { amountInCents: 100_00 },
-    });
+    // Deposit
+    senderAccount.amountInCents = 100_00;
+    await senderAccount.save();
 
     const idempotenceKey = randomUUID();
 
@@ -41,25 +40,17 @@ describe('TransferService', () => {
     expect(updatedSenderAccount.amountInCents).toBe(90_00);
 
     const [rawSenderAccount, rawRecipientAccount, rawTransaction] = await Promise.all([
-      prisma.account.findUnique({
-        where: { id: senderAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.account.findUnique({
-        where: { id: recipientAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.transaction.findUnique({
-        where: { id: transaction.id },
-      }),
+      Account.findById(senderAccount.id).select('+amountInCents'),
+      Account.findById(recipientAccount.id).select('+amountInCents'),
+      Transaction.findById(transaction.id),
     ]);
 
     expect(rawTransaction).toMatchObject({
       idempotenceKey,
       amountInCents: 10_00,
       description: 'Test transfer',
-      fromAccountId: senderAccount.id,
-      toAccountId: recipientAccount.id,
+      fromAccountId: senderAccount._id,
+      toAccountId: recipientAccount._id,
     });
     expect(rawSenderAccount?.amountInCents).toBe(90_00);
     expect(rawRecipientAccount?.amountInCents).toBe(10_00);
@@ -79,7 +70,7 @@ describe('TransferService', () => {
       }),
     ]);
 
-    expect(
+    await expect(
       transferService({
         idempotenceKey: 'test',
         loggedInAccountId: senderAccount.id,
@@ -90,18 +81,10 @@ describe('TransferService', () => {
     ).rejects.toThrow('Insufficient funds');
 
     const [rawSenderAccount, rawRecipientAccount, countTransactions] = await Promise.all([
-      prisma.account.findUnique({
-        where: { id: senderAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.account.findUnique({
-        where: { id: recipientAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.transaction.count({
-        where: {
-          OR: [{ fromAccountId: senderAccount.id }, { toAccountId: senderAccount.id }],
-        },
+      Account.findById(senderAccount.id).select('+amountInCents'),
+      Account.findById(recipientAccount.id).select('+amountInCents'),
+      Transaction.countDocuments({
+        $or: [{ fromAccountId: senderAccount.id }, { toAccountId: senderAccount.id }],
       }),
     ]);
 
@@ -124,11 +107,9 @@ describe('TransferService', () => {
       }),
     ]);
 
-    // Deposit?
-    await prisma.account.update({
-      where: { id: senderAccount.id },
-      data: { amountInCents: 100_00 },
-    });
+    // Deposit
+    senderAccount.amountInCents = 100_00;
+    await senderAccount.save();
 
     const idempotenceKey = randomUUID();
 
@@ -151,19 +132,10 @@ describe('TransferService', () => {
     expect(updatedSenderAccount.amountInCents).toBe(90_00);
 
     const [rawSenderAccount, rawRecipientAccount, countTransactions] = await Promise.all([
-      prisma.account.findUnique({
-        where: { id: senderAccount.id },
-        omit: { amountInCents: false },
-      }),
-      prisma.account.findUnique({
-        where: { id: recipientAccount.id },
-        omit: { amountInCents: false },
-      }),
-
-      prisma.transaction.count({
-        where: {
-          OR: [{ fromAccountId: senderAccount.id }, { toAccountId: senderAccount.id }],
-        },
+      Account.findById(senderAccount.id).select('+amountInCents'),
+      Account.findById(recipientAccount.id).select('+amountInCents'),
+      Transaction.countDocuments({
+        $or: [{ fromAccountId: senderAccount.id }, { toAccountId: senderAccount.id }],
       }),
     ]);
 

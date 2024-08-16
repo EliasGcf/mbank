@@ -38,7 +38,7 @@ describe('getAccountService', () => {
       email: 'user02@gmail.com',
     });
 
-    expect(account.amountInCents).toBeNull();
+    expect(account.amountInCents).toBeUndefined();
   });
 
   it('should not be able to get account that does not exist', async () => {

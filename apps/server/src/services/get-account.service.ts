@@ -1,4 +1,4 @@
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
 
 interface GetAccountParams {
   loggedInAccountId: string;
@@ -8,15 +8,13 @@ interface GetAccountParams {
 export async function getAccountService(params: GetAccountParams) {
   const shouldReturnAmountInCents = params.loggedInAccountId === params.accountId;
 
-  const account = await prisma.account.findUnique({
-    where: { id: params.accountId },
-    omit: { amountInCents: !shouldReturnAmountInCents },
-  });
+  const accountPromise = Account.findById(params.accountId);
+
+  if (shouldReturnAmountInCents) accountPromise.select('+amountInCents');
+
+  const account = await accountPromise;
 
   if (!account) throw new Error('Account not found');
 
-  return {
-    ...account,
-    amountInCents: shouldReturnAmountInCents ? account.amountInCents : null,
-  };
+  return account;
 }

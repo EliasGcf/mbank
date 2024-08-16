@@ -1,6 +1,6 @@
 import { hash } from 'bcryptjs';
 
-import { prisma } from '@lib/prisma';
+import { Account } from '../models/account.model';
 
 interface CreateAccountParams {
   name: string;
@@ -9,20 +9,19 @@ interface CreateAccountParams {
 }
 
 export async function createAccountService(params: CreateAccountParams) {
-  const accountByEmailExists = await prisma.account.findUnique({
-    where: { email: params.email },
-  });
+  const accountByEmailExists = await Account.findOne({ email: params.email });
 
   if (accountByEmailExists) throw new Error('Email not available');
 
-  const account = await prisma.account.create({
-    data: {
-      email: params.email,
-      password: await hash(params.password, 6),
-      amountInCents: 0,
-      name: params.name,
-    },
+  const hashedPassword = await hash(params.password, 6);
+
+  const account = new Account({
+    email: params.email,
+    password: hashedPassword,
+    name: params.name,
   });
+
+  await account.save();
 
   return account;
 }

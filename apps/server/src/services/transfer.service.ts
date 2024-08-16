@@ -1,4 +1,7 @@
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
+import { Transaction } from '@models/transaction.model';
+
+import { transactionWithReturn } from '../utils/transaction-with-return';
 
 interface TransferParams {
   idempotenceKey: string;
@@ -9,10 +12,9 @@ interface TransferParams {
 }
 
 export async function transferService(params: TransferParams) {
-  const fromAccount = await prisma.account.findUnique({
-    where: { id: params.loggedInAccountId },
-    omit: { amountInCents: false },
-  });
+  const fromAccount = await Account.findById(params.loggedInAccountId).select(
+    '+amountInCents',
+  );
 
   if (!fromAccount) throw new Error('From Account not found');
 
@@ -20,9 +22,7 @@ export async function transferService(params: TransferParams) {
 
   if (!hasEnoughFunds) throw new Error('Insufficient funds');
 
-  const toAccount = await prisma.account.findUnique({
-    where: { id: params.toAccountId },
-  });
+  const toAccount = await Account.findById(params.toAccountId);
 
   if (!toAccount) throw new Error('To Account not found');
 
@@ -30,14 +30,10 @@ export async function transferService(params: TransferParams) {
     throw new Error('It is not possible to transfer to the same account');
   }
 
-  const transactionFromIdempotenceKey = await prisma.transaction.findUnique({
-    where: {
-      idempotenceKey_fromAccountId_toAccountId: {
-        idempotenceKey: params.idempotenceKey,
-        fromAccountId: params.loggedInAccountId,
-        toAccountId: params.toAccountId,
-      },
-    },
+  const transactionFromIdempotenceKey = await Transaction.findOne({
+    idempotenceKey: params.idempotenceKey,
+    fromAccountId: params.loggedInAccountId,
+    toAccountId: params.toAccountId,
   });
 
   if (transactionFromIdempotenceKey) {
@@ -47,26 +43,35 @@ export async function transferService(params: TransferParams) {
     };
   }
 
-  const [updatedFromAccount, , transaction] = await prisma.$transaction([
-    prisma.account.update({
-      where: { id: fromAccount.id },
-      data: { amountInCents: { decrement: params.amountInCents } },
-      omit: { amountInCents: false },
-    }),
-    prisma.account.update({
-      where: { id: toAccount.id },
-      data: { amountInCents: { increment: params.amountInCents } },
-    }),
-    prisma.transaction.create({
-      data: {
-        fromAccountId: fromAccount.id,
-        toAccountId: toAccount.id,
+  const [updatedFromAccount, transaction] = await transactionWithReturn(
+    async (session) => {
+      const updatedFromAccount = await Account.findByIdAndUpdate(
+        fromAccount._id,
+        { $inc: { amountInCents: -params.amountInCents } },
+        { new: true, session },
+      ).select('+amountInCents');
+
+      if (!updatedFromAccount) throw new Error('From Account not found');
+
+      await Account.findByIdAndUpdate(
+        toAccount._id,
+        { $inc: { amountInCents: params.amountInCents } },
+        { session },
+      );
+
+      const transaction = new Transaction({
+        fromAccountId: fromAccount._id,
+        toAccountId: toAccount._id,
         amountInCents: params.amountInCents,
         description: params.description,
         idempotenceKey: params.idempotenceKey,
-      },
-    }),
-  ]);
+      });
+
+      await transaction.save({ session });
+
+      return [updatedFromAccount, transaction];
+    },
+  );
 
   return { account: updatedFromAccount, transaction };
 }

@@ -1,7 +1,8 @@
 import { compare } from 'bcryptjs';
 
 import { signJWT } from '@lib/jwt';
-import { prisma } from '@lib/prisma';
+
+import { Account } from '@models/account.model';
 
 interface LoginParams {
   email: string;
@@ -9,10 +10,7 @@ interface LoginParams {
 }
 
 export async function loginService(params: LoginParams) {
-  const account = await prisma.account.findUnique({
-    where: { email: params.email },
-    omit: { password: false },
-  });
+  const account = await Account.findOne({ email: params.email }).select('+password');
 
   if (!account) throw new Error('Invalid credentials');
 

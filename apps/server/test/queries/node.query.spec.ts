@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
 import supertest from 'supertest';
 
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
 
 import { app } from '@app';
 
@@ -14,10 +14,7 @@ describe('(Query) Node', () => {
       createFakeAccount(),
     ]);
 
-    await prisma.account.update({
-      where: { email: senderAccount.email },
-      data: { amountInCents: 100_00 },
-    });
+    await Account.updateOne({ email: senderAccount.email }, { amountInCents: 100_00 });
 
     const login = await supertest(app.callback())
       .post('/graphql')
@@ -39,6 +36,7 @@ describe('(Query) Node', () => {
 
     const transactionResponse = await supertest(app.callback())
       .post('/graphql')
+      .set('Authorization', `Bearer ${token}`)
       .send({
         query: `
           mutation Transfer($data: TransferInput!) {
@@ -56,7 +54,6 @@ describe('(Query) Node', () => {
           },
         },
       })
-      .set('Authorization', `Bearer ${token}`)
       .expect(200);
 
     const response = await supertest(app.callback())
@@ -131,10 +128,7 @@ describe('(Query) Node', () => {
       createFakeAccount(),
     ]);
 
-    await prisma.account.update({
-      where: { email: senderAccount.email },
-      data: { amountInCents: 100_00 },
-    });
+    await Account.updateOne({ email: senderAccount.email }, { amountInCents: 100_00 });
 
     const login = await supertest(app.callback())
       .post('/graphql')

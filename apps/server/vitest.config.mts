@@ -8,8 +8,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['dotenv/config'],
     environmentMatchGlobs: [
-      ['test/**', './prisma/prisma-test-environment.mts'],
-      ['./src/**/*.spec.ts', './prisma/prisma-test-environment.mts'],
+      ['test/**', './test/mongo-test-environment.mts'],
+      ['./src/**/*.spec.ts', './test/mongo-test-environment.mts'],
     ],
   },
   resolve: { alias: { graphql: 'graphql/index.js' } },

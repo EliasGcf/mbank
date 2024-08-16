@@ -1,4 +1,4 @@
-import { prisma } from '@lib/prisma';
+import { Account } from '@models/account.model';
 
 import { createAccountService } from '@services/create-account.service';
 
@@ -13,10 +13,7 @@ describe('CreateAccountService', () => {
     expect(account).toHaveProperty('id');
     expect(account.id).toBeTypeOf('string');
 
-    const rawAccount = await prisma.account.findUnique({
-      where: { id: account.id },
-      omit: { amountInCents: false },
-    });
+    const rawAccount = await Account.findById(account.id).select('+amountInCents');
 
     expect(rawAccount).not.toBeNull();
     expect(rawAccount).toMatchObject({
@@ -37,7 +34,7 @@ describe('CreateAccountService', () => {
 
     expect(createAccountService(accountData)).rejects.toThrowError('Email not available');
 
-    const countInDB = await prisma.account.count({ where: { email: accountData.email } });
+    const countInDB = await Account.countDocuments({ email: accountData.email });
 
     expect(countInDB).toBe(1);
   });
