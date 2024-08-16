@@ -10,6 +10,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@entria/graphql-mongoose-loader':
+        specifier: ^4.4.0
+        version: 4.4.0(graphql-relay@0.10.2(graphql@16.9.0))(graphql@16.9.0)(mongoose@8.5.3)
       '@koa/cors':
         specifier: ^5.0.0
         version: 5.0.0
@@ -19,6 +22,9 @@ importers:
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
+      dataloader:
+        specifier: ^2.2.2
+        version: 2.2.2
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -344,6 +350,13 @@ packages:
   '@babel/types@7.25.2':
     resolution: {integrity: sha512-YTnYtra7W9e6/oAZEHj0bJehPRUlLH9/fbpT5LfB0NhQXyALCRkRs3zH9v07IYhkgpqX6Z78FnuccZr/l4Fs4Q==}
     engines: {node: '>=6.9.0'}
+
+  '@entria/graphql-mongoose-loader@4.4.0':
+    resolution: {integrity: sha512-RcNdqPQf/GlnQch1IyUOTMTw13k+zE7zK9JeMd5cUGnShI/ih4k1JZEEtJDwyRwW1bOqAhlmP8dyY1CY8iPX8Q==}
+    peerDependencies:
+      graphql: '*'
+      graphql-relay: '*'
+      mongoose: '*'
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -1754,6 +1767,9 @@ packages:
   data-view-byte-offset@1.0.0:
     resolution: {integrity: sha512-t/Ygsytq+R995EJ5PZlD4Cu56sWa8InXySaViRzw9apusqsOO2bQP+SbYzAhR0pFKoB+43lYy8rWban9JSuXnA==}
     engines: {node: '>= 0.4'}
+
+  dataloader@2.2.2:
+    resolution: {integrity: sha512-8YnDaaf7N3k/q5HnTJVuzSyLETjoZjVmHc4AeKAzOvKHEFQKcn64OKBfzHYtE9zGjctNM7V9I0MfnUVLpi7M5g==}
 
   debug@3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
@@ -3935,6 +3951,12 @@ snapshots:
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
 
+  '@entria/graphql-mongoose-loader@4.4.0(graphql-relay@0.10.2(graphql@16.9.0))(graphql@16.9.0)(mongoose@8.5.3)':
+    dependencies:
+      graphql: 16.9.0
+      graphql-relay: 0.10.2(graphql@16.9.0)
+      mongoose: 8.5.3
+
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
 
@@ -5313,6 +5335,8 @@ snapshots:
       call-bind: 1.0.7
       es-errors: 1.3.0
       is-data-view: 1.0.1
+
+  dataloader@2.2.2: {}
 
   debug@3.2.7:
     dependencies:

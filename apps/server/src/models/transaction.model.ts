@@ -1,3 +1,5 @@
+import { mongooseLoader } from '@entria/graphql-mongoose-loader';
+import DataLoader from 'dataloader';
 import { model, Schema } from 'mongoose';
 
 export interface TransactionProps {
@@ -28,3 +30,7 @@ transactionSchema.index(
 );
 
 export const Transaction = model<TransactionProps>('Transaction', transactionSchema);
+
+export const TransactionLoader = new DataLoader<string, TransactionProps>((ids) => {
+  return mongooseLoader(Transaction, ids, false);
+});

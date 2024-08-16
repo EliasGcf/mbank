@@ -1,16 +1,13 @@
+import { connectionFromMongoCursor } from '@entria/graphql-mongoose-loader';
 import { GraphQLInt, GraphQLNonNull, GraphQLObjectType, GraphQLString } from 'graphql';
-import {
-  connectionArgs,
-  connectionFromPromisedArray,
-  globalIdField,
-} from 'graphql-relay';
+import { connectionArgs, globalIdField } from 'graphql-relay';
 
 import { nodeInterface } from '@graphql/queries/node.query';
 import { TransactionConnection } from '@graphql/types/transaction.type';
 
 import { verifyJWT } from '@lib/jwt';
 
-import { getTransactionsService } from '@services/get-transactions.service';
+import { Transaction, TransactionLoader } from '@models/transaction.model';
 
 export const AccountType: GraphQLObjectType = new GraphQLObjectType({
   name: 'Account',
@@ -45,10 +42,16 @@ export const AccountType: GraphQLObjectType = new GraphQLObjectType({
         if (!jwt) return null;
         if (jwt.sub !== account.id) return null;
 
-        return connectionFromPromisedArray(
-          getTransactionsService({ loggedInAccountId: jwt.sub }),
+        return connectionFromMongoCursor({
+          cursor: Transaction.find({
+            $or: [{ fromAccountId: jwt.sub }, { toAccountId: jwt.sub }],
+          }),
+          context: ctx,
           args,
-        );
+          loader: (_, id) => {
+            return TransactionLoader.load(id.toString());
+          },
+        });
       },
     },
   },
