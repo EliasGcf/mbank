@@ -16,8 +16,8 @@ export function DashboardPage() {
     <div>
       <Header />
 
-      <main className="max-w-6xl mx-auto mt-8">
-        <div className="flex justify-between gap-4">
+      <main className="max-w-6xl mx-auto p-4 md:mt-8 md:py-0">
+        <div className="flex flex-col justify-between gap-4 md:flex-row">
           <Card className="flex-1">
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle>Income</CardTitle>

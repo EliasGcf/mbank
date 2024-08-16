@@ -39,7 +39,7 @@ export function Header() {
         <div className="flex gap-5 items-center h-full">
           <div className="flex flex-col">
             <p>{account.name}</p>
-            <p>{account.email}</p>
+            <p className="hidden md:flex">{account.email}</p>
           </div>
 
           <Separator orientation="vertical" className="h-3/4" />
