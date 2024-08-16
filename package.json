@@ -1,10 +1,9 @@
 {
-  "name": "woovi-code-challenge",
+  "name": "mbank-code-challenge",
   "version": "1.0.0",
   "description": "",
   "private": true,
-  "scripts": {
-  },
+  "scripts": {},
   "keywords": [],
   "author": "",
   "license": "ISC",
