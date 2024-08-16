@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch --env-file .env src/server.ts",
+    "build": "tsup",
+    "start": "node build/server.js",
     "test": "vitest run",
     "test:verbose": "vitest run --reporter=verbose"
   },
@@ -45,6 +47,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "prettier": "^3.0.0",
     "supertest": "^7.0.0",
+    "tsup": "^8.2.4",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
     "vite-require": "^0.2.3",
