@@ -13,7 +13,7 @@ async function run() {
 
   console.log('Mongoose connected');
 
-  app.listen(3333, () => {
+  app.listen(env.PORT, () => {
     console.log(`Server is running on port http://localhost:${env.PORT}`);
     console.log(
       `GraphQL playground is running on http://localhost:${env.PORT}/playground`,
