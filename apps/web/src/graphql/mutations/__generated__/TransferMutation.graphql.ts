@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0ee3393fdb15afd3ed86d4e787a05cf8>>
+ * @generated SignedSource<<8346ba3e2b68701fde7a36bb3c979f0c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -24,6 +24,24 @@ export type TransferMutation$data = {
     readonly account: {
       readonly amountInCents: number | null | undefined;
       readonly id: string;
+      readonly transactions: {
+        readonly edges: ReadonlyArray<{
+          readonly node: {
+            readonly amountInCents: number;
+            readonly createdAt: string;
+            readonly description: string | null | undefined;
+            readonly fromAccount: {
+              readonly id: string;
+              readonly name: string;
+            };
+            readonly id: string;
+            readonly toAccount: {
+              readonly id: string;
+              readonly name: string;
+            };
+          } | null | undefined;
+        } | null | undefined> | null | undefined;
+      } | null | undefined;
     } | null | undefined;
     readonly transaction: {
       readonly id: string;
@@ -50,7 +68,24 @@ v1 = {
   "name": "id",
   "storageKey": null
 },
-v2 = [
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "amountInCents",
+  "storageKey": null
+},
+v3 = [
+  (v1/*: any*/),
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "name",
+    "storageKey": null
+  }
+],
+v4 = [
   {
     "alias": null,
     "args": [
@@ -86,11 +121,74 @@ v2 = [
         "plural": false,
         "selections": [
           (v1/*: any*/),
+          (v2/*: any*/),
           {
             "alias": null,
             "args": null,
-            "kind": "ScalarField",
-            "name": "amountInCents",
+            "concreteType": "TransactionConnection",
+            "kind": "LinkedField",
+            "name": "transactions",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "TransactionEdge",
+                "kind": "LinkedField",
+                "name": "edges",
+                "plural": true,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Transaction",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v1/*: any*/),
+                      (v2/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "description",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "createdAt",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Account",
+                        "kind": "LinkedField",
+                        "name": "fromAccount",
+                        "plural": false,
+                        "selections": (v3/*: any*/),
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Account",
+                        "kind": "LinkedField",
+                        "name": "toAccount",
+                        "plural": false,
+                        "selections": (v3/*: any*/),
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              }
+            ],
             "storageKey": null
           }
         ],
@@ -106,7 +204,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "TransferMutation",
-    "selections": (v2/*: any*/),
+    "selections": (v4/*: any*/),
     "type": "Mutation",
     "abstractKey": null
   },
@@ -115,19 +213,19 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "TransferMutation",
-    "selections": (v2/*: any*/)
+    "selections": (v4/*: any*/)
   },
   "params": {
-    "cacheID": "ed6016eee8c7af6e4ac5750131bb6683",
+    "cacheID": "ee53478c365adaad4fb653486a777472",
     "id": null,
     "metadata": {},
     "name": "TransferMutation",
     "operationKind": "mutation",
-    "text": "mutation TransferMutation(\n  $data: TransferInput!\n) {\n  Transfer(input: $data) {\n    transaction {\n      id\n    }\n    account {\n      id\n      amountInCents\n    }\n  }\n}\n"
+    "text": "mutation TransferMutation(\n  $data: TransferInput!\n) {\n  Transfer(input: $data) {\n    transaction {\n      id\n    }\n    account {\n      id\n      amountInCents\n      transactions {\n        edges {\n          node {\n            id\n            amountInCents\n            description\n            createdAt\n            fromAccount {\n              id\n              name\n            }\n            toAccount {\n              id\n              name\n            }\n          }\n        }\n      }\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "3dfd9c7cc78080921c438f9c3c930696";
+(node as any).hash = "6677d720d2260a034e374a3eb64b9f2f";
 
 export default node;

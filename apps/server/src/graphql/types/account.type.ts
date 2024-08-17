@@ -45,7 +45,7 @@ export const AccountType: GraphQLObjectType = new GraphQLObjectType({
         return connectionFromMongoCursor({
           cursor: Transaction.find({
             $or: [{ fromAccountId: jwt.sub }, { toAccountId: jwt.sub }],
-          }),
+          }).sort({ createdAt: 'desc' }),
           context: ctx,
           args,
           loader: (_, id) => {
