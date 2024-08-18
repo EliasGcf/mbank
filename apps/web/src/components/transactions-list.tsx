@@ -11,9 +11,11 @@ import { useTransactions } from '@/hooks/transactions.hook';
 import { LoaderCircleIcon } from 'lucide-react';
 import dayjs from 'dayjs';
 import { formatCurrency } from '@/utils/format-currency';
+import { useMyAccount } from '@/hooks/my-account.hook';
 
 export function TransactionsList() {
   const data = useTransactions();
+  const { account: myAccount } = useMyAccount();
 
   return (
     <div className="flex flex-col gap-3">
@@ -33,7 +35,7 @@ export function TransactionsList() {
 
         <TableBody>
           {data.account?.transactions?.edges?.map((edge) => {
-            const isIncoming = edge?.node?.id === edge?.node?.toAccount.id;
+            const isIncoming = myAccount.id === edge?.node?.toAccount.id;
             const account = isIncoming ? edge?.node?.fromAccount : edge?.node?.toAccount;
 
             return (
