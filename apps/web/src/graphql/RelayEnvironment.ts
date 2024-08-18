@@ -1,9 +1,10 @@
+import { env } from '@/env';
 import { Environment, Network, RecordSource, Store, FetchFunction } from 'relay-runtime';
 
 const fetchFn: FetchFunction = async (request, variables) => {
   const token = localStorage.getItem('token');
 
-  const resp = await fetch(import.meta.env.VITE_GRAPHQL_API_URL, {
+  const resp = await fetch(env.GRAPHQL_API_URL, {
     method: 'POST',
     headers: {
       Accept:

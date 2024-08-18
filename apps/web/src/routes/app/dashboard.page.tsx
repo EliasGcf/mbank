@@ -11,6 +11,7 @@ import { DialogTrigger } from '@/components/ui/dialog';
 import { TransferDialog } from '@/components/transfer-dialog';
 import { TransactionsList } from '@/components/transactions-list';
 import { Suspense } from 'react';
+import { ReceiveQrCodeDialog } from '@/components/receive-qr-code-dialog';
 
 export function DashboardPage() {
   return (
@@ -43,10 +44,12 @@ export function DashboardPage() {
 
       <div className="flex gap-2 justify-end">
         {/* Show a QRCode */}
-        <Button variant="secondary">
-          <QrCodeIcon className="size-4 mr-2" />
-          Receive
-        </Button>
+        <ReceiveQrCodeDialog email="eliasgabrielcf@gmail.com">
+          <Button variant="secondary">
+            <QrCodeIcon className="size-4 mr-2" />
+            Receive
+          </Button>
+        </ReceiveQrCodeDialog>
 
         <TransferDialog>
           <DialogTrigger asChild>

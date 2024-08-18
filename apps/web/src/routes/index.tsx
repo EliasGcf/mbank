@@ -13,9 +13,15 @@ export const router = createBrowserRouter([
     element: <AppLayout />,
     errorElement: <ErrorPage />,
     id: 'app',
-    loader: async () => {
+    loader: async ({ request }) => {
       const token = localStorage.getItem('token');
-      if (!token) return redirect('/sign-in');
+
+      if (!token) {
+        const toAccount = new URL(request.url).searchParams.get('toAccount');
+        if (toAccount) localStorage.setItem('toAccount', toAccount);
+
+        return redirect(`/sign-in`);
+      }
 
       return null;
     },

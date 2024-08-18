@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { LoaderCircleIcon, SearchIcon } from 'lucide-react';
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { useMyAccount } from '@/hooks/my-account.hook';
 import { CurrencyInput } from '@/components/currency-input';
 
@@ -31,6 +31,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'react-router-dom';
 
 function getFormSchema(maxAmount: number, currentEmail?: string) {
   return z.object({
@@ -53,15 +54,28 @@ function getFormSchema(maxAmount: number, currentEmail?: string) {
 type FormData = z.infer<ReturnType<typeof getFormSchema>>;
 
 export function TransferDialog(props: PropsWithChildren) {
+  const environment = useRelayEnvironment();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { account } = useMyAccount();
+
+  const toAccountEmail =
+    searchParams.get('toAccount') || localStorage.getItem('toAccount');
+
+  useEffect(() => {
+    localStorage.removeItem('toAccount');
+    searchParams.delete('toAccount');
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(getFormSchema(account.balance, account.email)),
     mode: 'onChange',
+    defaultValues: { email: toAccountEmail || '' },
   });
-  const environment = useRelayEnvironment();
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => {
+    return !!toAccountEmail;
+  });
 
   const [isLoadingAccountToTransfer, setIsLoadingAccountToTransfer] = useState(false);
   const [accountToTransfer, setAccountToTransfer] = useState<
